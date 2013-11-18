@@ -90,7 +90,7 @@ index ec2d35c..56237af 100644
  	  librt
  	;
 diff --git a/lib/opmip/debug_linux.cpp b/lib/opmip/debug_linux.cpp
-index 1c6b117..5820e1d 100644
+index 1c6b117..ba395ec 100644
 --- a/lib/opmip/debug_linux.cpp
 +++ b/lib/opmip/debug_linux.cpp
 @@ -19,7 +19,6 @@
@@ -101,128 +101,21 @@ index 1c6b117..5820e1d 100644
  #include <signal.h>
  
  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-@@ -28,117 +27,31 @@ namespace opmip {
- /////////////////////////////////////////////////////////////////////////////////////////////////////////////
- static void signal_handler(int, siginfo_t* info, void* context)
- {
--	struct sigcontext* mctx = (struct sigcontext*) &((ucontext_t*) context)->uc_mcontext;
--	crash_ctx ctx;
--
--	ctx.code = info->si_signo;
--#ifdef __i386__
--	ctx.address = (void*) mctx->eip;
--#elif __amd64__
--	ctx.address = (void*) mctx->rip;
--#else
--#	error "Add support for this architecture"
--#endif
--	ctx.context = mctx;
--	crash(ctx);
-+		std::fprintf(stderr, "Devia estar aqui um erro, não consegui compilar com o header exec.info por isso removi o código deste ficheiro. debug_linux.cpp");
- }
+@@ -84,7 +83,7 @@ static void dump_backtrace(void* address)
+ 	int n;
  
- static void dump_context(void* context)
- {
--	::sigcontext* ctx = (::sigcontext*) context;
--
--	std::fprintf(stderr,	"\n"
--							"== context ==\n"
--#ifdef __i386__
--							"eax = %08lX  edx = %08lX  ecx = %08lX  ebx = %08lX\n"
--							"edi = %08lX  esi = %08lX  ebp = %08lX  esp = %08lX\n"
--							"\n"
--							"eip = %08lX  flags = %08lX\n",
--							ctx->eax, ctx->edx, ctx->ecx, ctx->ebx,
--							ctx->edi, ctx->esi, ctx->ebp, ctx->esp,
--							ctx->eip, ctx->eflags
--#elif __amd64__
--							"rax = %016lX  rdx = %016lX  rcx = %016lX\n"
--							"rbx = %016lX  rdi = %016lX  rsi = %016lX\n"
--							"rbp = %016lX  rsp = %016lX  r8  = %016lX\n"
--							"r9  = %016lX  r10 = %016lX  r11 = %016lX\n"
--							"r12 = %016lX  r13 = %016lX  r14 = %016lX\n"
--							"r15 = %016lX\n"
--							"\n"
--							"rip = %016lX  flags = %08lX\n",
--							ctx->rax, ctx->rdx, ctx->rcx, ctx->rbx,
--							ctx->rdi, ctx->rsi, ctx->rbp, ctx->rsp,
--							ctx->r8 , ctx->r9 , ctx->r10, ctx->r11,
--							ctx->r12, ctx->r13, ctx->r14, ctx->r15,
--							ctx->rip, ctx->eflags
--#else
--#	error "Add support for this architecture"
--#endif
--	                        );
-+	
-+	std::fprintf(stderr, "Devia estar aqui um erro, não consegui compilar com o header exec.info por isso removi o código deste ficheiro. debug_linux.cpp");
- }
- 
- static void dump_backtrace(void* address)
- {
--	void* trace[128];
--	int i = 0;
--	int n;
--
--	std::memset(trace, 0, sizeof(trace));
+ 	std::memset(trace, 0, sizeof(trace));
 -	n = ::backtrace(trace, OPMIP_COUNT_OF(trace));
--	if (address)
--		for(; i < n; ++i)
--			if (trace[i] == address)
--				break;
++
+ 	if (address)
+ 		for(; i < n; ++i)
+ 			if (trace[i] == address)
+@@ -92,7 +91,7 @@ static void dump_backtrace(void* address)
  
--	std::fprintf(stderr, "\n== stack backtrace ==\n");
--	std::fflush(stderr);
+ 	std::fprintf(stderr, "\n== stack backtrace ==\n");
+ 	std::fflush(stderr);
 -	::backtrace_symbols_fd(trace + i, n - i, STDERR_FILENO);
-+	std::fprintf(stderr, "Devia estar aqui um erro, não consegui compilar com o header exec.info por isso removi o código deste ficheiro. debug_linux.cpp");
-+	
++
  }
  
  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
- void setup_crash_handler()
- {
--	struct sigaction handler;
--
--	handler.sa_sigaction = signal_handler;
--	handler.sa_flags = SA_SIGINFO;
--	sigemptyset(&handler.sa_mask);
--	sigaction(SIGFPE, &handler, nullptr);
--	sigaction(SIGILL, &handler, nullptr);
--	sigaction(SIGINT, &handler, nullptr);
--	sigaction(SIGSEGV, &handler, nullptr);
--	sigaction(SIGTRAP, &handler, nullptr);
--	//SIGSTKFLT
-+		std::fprintf(stderr, "Devia estar aqui um erro, não consegui compilar com o header exec.info por isso removi o código deste ficheiro. debug_linux.cpp");
- }
- 
- void crash(const crash_ctx& ctx)
- {
--	std::fprintf(stderr,	 "\n"
--							 "================================= Crash Dump ==================================\n");
--
--	::psignal(ctx.code, "Reason");
--
--	if (ctx.file)
--		std::fprintf(stderr, "Function   : %s\n"
--							 "File       : %s\n"
--							 "Line       : %u\n",
--							 ctx.function,
--							 ctx.file,
--							 ctx.line);
--
--	if (ctx.expression)
--		std::fprintf(stderr, "Expression : %s\n",
--							 ctx.expression);
--
--	if (ctx.context)
--		dump_context(ctx.context);
--
--	dump_backtrace(ctx.address);
--
--	std::fprintf(stderr,	 "===============================================================================\n"
--							 "\n");
--	std::fflush(stderr);
--	std::abort();
-+	std::fprintf(stderr, "Devia estar aqui um erro, não consegui compilar com o header exec.info por isso removi o código deste ficheiro. debug_linux.cpp");
- }
- 
- ///////////////////////////////////////////////////////////////////////////////
