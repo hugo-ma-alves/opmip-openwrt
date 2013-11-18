@@ -89,33 +89,3 @@ index ec2d35c..56237af 100644
  	  pthread
  	  librt
  	;
-diff --git a/lib/opmip/debug_linux.cpp b/lib/opmip/debug_linux.cpp
-index 1c6b117..ba395ec 100644
---- a/lib/opmip/debug_linux.cpp
-+++ b/lib/opmip/debug_linux.cpp
-@@ -19,7 +19,6 @@
- #include <cstdio>
- #include <cstring>
- 
--#include <execinfo.h>
- #include <signal.h>
- 
- /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-@@ -84,7 +83,7 @@ static void dump_backtrace(void* address)
- 	int n;
- 
- 	std::memset(trace, 0, sizeof(trace));
--	n = ::backtrace(trace, OPMIP_COUNT_OF(trace));
-+
- 	if (address)
- 		for(; i < n; ++i)
- 			if (trace[i] == address)
-@@ -92,7 +91,7 @@ static void dump_backtrace(void* address)
- 
- 	std::fprintf(stderr, "\n== stack backtrace ==\n");
- 	std::fflush(stderr);
--	::backtrace_symbols_fd(trace + i, n - i, STDERR_FILENO);
-+
- }
- 
- /////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,56 @@
+diff --git a/node.db b/node.db
+index 6499615..8767e94 100644
+--- a/node.db
++++ b/node.db
+@@ -2,13 +2,13 @@
+ 	"router-nodes" :
+ 	[
+ 		{
+-			"id"          : "kenny",
+-			"ip-address"  : "2001:690:2380:777a:20c:6eff:feda:195c",
++			"id"          : "node1",
++			"ip-address"  : "2001:aaaa:bbbb:cccc::1",
+ 			"ip-scope-id" : "2"
+ 		},
+ 		{
+-			"id"          : "kyle",
+-			"ip-address"  : "2001:690:2380:778f:20c:6eff:fedc:2a16",
++			"id"          : "node2",
++			"ip-address"  : "2001:dddd:eeee:ffff::2",
+ 			"ip-scope-id" : "2"
+ 		}
+ 	],
+@@ -16,10 +16,29 @@
+ 	"mobile-nodes" :
+ 	[
+ 		{
+-			"id"        : "butters",
+-			"ip-prefix" : "2001:690:2380:7792::/64",
+-			"mac"       : "00:13:e8:ef:6e:81",
+-			"lma-id"    : "kenny"
++			"id"           : "mn1",
++			"ip-prefix"    :
++			[
++				"2001:aaaa::/64"
++			],
++			"home-address" : "2001:aaaa::1",
++			"link-address" :
++			[
++				"00:11:22:33:44:55"
++			],
++			"lma-id"       : "node1"
++		},
++		{
++			"id"           : "mn2",
++			"ip-prefix"    :
++			[
++				"2001:bbbb::/64"
++			],
++			"link-address" :
++			[
++				"00:12:23:34:45:56"
++			],
++			"lma-id"       : "node1"
+ 		}
+ 	]
+ }
