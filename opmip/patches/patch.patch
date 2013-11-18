@@ -1,0 +1,228 @@
+diff --git a/Jamroot b/Jamroot
+index 14a56c4..2af0884 100644
+--- a/Jamroot
++++ b/Jamroot
+@@ -22,7 +22,8 @@ import path ;
+ project opmip
+ 	: requirements
+ 		<include>inc
+-		<link>static
++		<link>shared
++		<runtime-link>shared
+ 		<linkflags>-rdynamic
+ 		<define>BOOST_ASIO_SEPARATE_COMPILATION
+ 	: usage-requirements
+@@ -30,29 +31,6 @@ project opmip
+ 	: build-dir bin.v2
+ 	;
+ 
+-#
+-# Import the boost project
+-#
+-path-constant TOP : . ;
+-
+-local boost-major = 1 ;
+-local boost-minor = 49 ;
+-local boost-patch = 0 ;
+-local boost-root ;
+-
+-boost-root ?= [ option.get boost-root ] ;
+-boost-root ?= [ os.environ BOOST_ROOT ] ;
+-
+-if ! $(boost-root) {
+-	boost-root = [ path.join $(TOP) ../boost_$(boost-major)_$(boost-minor)_$(boost-patch) ] ;
+-
+-	local version = $(boost-major).$(boost-minor).$(boost-patch) ;
+-
+-	ECHO "Warning: Assuming that Boost $(version) root is located at $(boost-root)" ;
+-	ECHO "Warning: You can set the location of the Boost $(version) libraries root in the command line"
+-	     "(--boost-root=/path/to/boost) or in the environment variable BOOST_ROOT" ;
+-}
+-use-project boost : $(boost-root) ;
+ 
+ #
+ # Import the ODTONE Project
+diff --git a/app/opmip-lma/Jamfile b/app/opmip-lma/Jamfile
+index 7a2cbd9..f49694f 100644
+--- a/app/opmip-lma/Jamfile
++++ b/app/opmip-lma/Jamfile
+@@ -19,8 +19,6 @@ exe opmip-lma
+ 	: main.cpp
+ 	  options.cpp
+ 	  ../../lib/opmip
+-	  /boost//thread
+-	  /boost//program_options
+ 	;
+ 
+ install install
+diff --git a/app/opmip-mag/Jamfile b/app/opmip-mag/Jamfile
+index 51f82f4..88e0f84 100644
+--- a/app/opmip-mag/Jamfile
++++ b/app/opmip-mag/Jamfile
+@@ -38,8 +38,6 @@ exe opmip-mag
+ 	  drivers/madwifi_driver_impl.cpp
+ 	  drivers/dummy.cpp
+ 	  ../../lib/opmip
+-	  /boost//thread
+-	  /boost//program_options
+ 	  dl
+ 	  ieee802_11
+ 	;
+diff --git a/lib/opmip/Jamfile b/lib/opmip/Jamfile
+index ec2d35c..56237af 100644
+--- a/lib/opmip/Jamfile
++++ b/lib/opmip/Jamfile
+@@ -20,7 +20,6 @@ opmip.runtime-lib librt : rt ;
+ 
+ lib conf
+ 	: conf.cpp
+-	  /boost//headers
+ 	: <c++-template-depth>1024
+ 	;
+ 
+@@ -48,8 +47,6 @@ lib opmip
+ 	  pmip/addrconf_server.cpp
+ 	  sys/ip6_tunnel_service.cpp
+ 	  sys/route_table.cpp
+-	  /boost//headers
+-	  /boost//system
+ 	  pthread
+ 	  librt
+ 	;
+diff --git a/lib/opmip/debug_linux.cpp b/lib/opmip/debug_linux.cpp
+index 1c6b117..5820e1d 100644
+--- a/lib/opmip/debug_linux.cpp
++++ b/lib/opmip/debug_linux.cpp
+@@ -19,7 +19,6 @@
+ #include <cstdio>
+ #include <cstring>
+ 
+-#include <execinfo.h>
+ #include <signal.h>
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@@ -28,117 +27,31 @@ namespace opmip {
+ /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ static void signal_handler(int, siginfo_t* info, void* context)
+ {
+-	struct sigcontext* mctx = (struct sigcontext*) &((ucontext_t*) context)->uc_mcontext;
+-	crash_ctx ctx;
+-
+-	ctx.code = info->si_signo;
+-#ifdef __i386__
+-	ctx.address = (void*) mctx->eip;
+-#elif __amd64__
+-	ctx.address = (void*) mctx->rip;
+-#else
+-#	error "Add support for this architecture"
+-#endif
+-	ctx.context = mctx;
+-	crash(ctx);
++		std::fprintf(stderr, "Devia estar aqui um erro, não consegui compilar com o header exec.info por isso removi o código deste ficheiro. debug_linux.cpp");
+ }
+ 
+ static void dump_context(void* context)
+ {
+-	::sigcontext* ctx = (::sigcontext*) context;
+-
+-	std::fprintf(stderr,	"\n"
+-							"== context ==\n"
+-#ifdef __i386__
+-							"eax = %08lX  edx = %08lX  ecx = %08lX  ebx = %08lX\n"
+-							"edi = %08lX  esi = %08lX  ebp = %08lX  esp = %08lX\n"
+-							"\n"
+-							"eip = %08lX  flags = %08lX\n",
+-							ctx->eax, ctx->edx, ctx->ecx, ctx->ebx,
+-							ctx->edi, ctx->esi, ctx->ebp, ctx->esp,
+-							ctx->eip, ctx->eflags
+-#elif __amd64__
+-							"rax = %016lX  rdx = %016lX  rcx = %016lX\n"
+-							"rbx = %016lX  rdi = %016lX  rsi = %016lX\n"
+-							"rbp = %016lX  rsp = %016lX  r8  = %016lX\n"
+-							"r9  = %016lX  r10 = %016lX  r11 = %016lX\n"
+-							"r12 = %016lX  r13 = %016lX  r14 = %016lX\n"
+-							"r15 = %016lX\n"
+-							"\n"
+-							"rip = %016lX  flags = %08lX\n",
+-							ctx->rax, ctx->rdx, ctx->rcx, ctx->rbx,
+-							ctx->rdi, ctx->rsi, ctx->rbp, ctx->rsp,
+-							ctx->r8 , ctx->r9 , ctx->r10, ctx->r11,
+-							ctx->r12, ctx->r13, ctx->r14, ctx->r15,
+-							ctx->rip, ctx->eflags
+-#else
+-#	error "Add support for this architecture"
+-#endif
+-	                        );
++	
++	std::fprintf(stderr, "Devia estar aqui um erro, não consegui compilar com o header exec.info por isso removi o código deste ficheiro. debug_linux.cpp");
+ }
+ 
+ static void dump_backtrace(void* address)
+ {
+-	void* trace[128];
+-	int i = 0;
+-	int n;
+-
+-	std::memset(trace, 0, sizeof(trace));
+-	n = ::backtrace(trace, OPMIP_COUNT_OF(trace));
+-	if (address)
+-		for(; i < n; ++i)
+-			if (trace[i] == address)
+-				break;
+ 
+-	std::fprintf(stderr, "\n== stack backtrace ==\n");
+-	std::fflush(stderr);
+-	::backtrace_symbols_fd(trace + i, n - i, STDERR_FILENO);
++	std::fprintf(stderr, "Devia estar aqui um erro, não consegui compilar com o header exec.info por isso removi o código deste ficheiro. debug_linux.cpp");
++	
+ }
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ void setup_crash_handler()
+ {
+-	struct sigaction handler;
+-
+-	handler.sa_sigaction = signal_handler;
+-	handler.sa_flags = SA_SIGINFO;
+-	sigemptyset(&handler.sa_mask);
+-	sigaction(SIGFPE, &handler, nullptr);
+-	sigaction(SIGILL, &handler, nullptr);
+-	sigaction(SIGINT, &handler, nullptr);
+-	sigaction(SIGSEGV, &handler, nullptr);
+-	sigaction(SIGTRAP, &handler, nullptr);
+-	//SIGSTKFLT
++		std::fprintf(stderr, "Devia estar aqui um erro, não consegui compilar com o header exec.info por isso removi o código deste ficheiro. debug_linux.cpp");
+ }
+ 
+ void crash(const crash_ctx& ctx)
+ {
+-	std::fprintf(stderr,	 "\n"
+-							 "================================= Crash Dump ==================================\n");
+-
+-	::psignal(ctx.code, "Reason");
+-
+-	if (ctx.file)
+-		std::fprintf(stderr, "Function   : %s\n"
+-							 "File       : %s\n"
+-							 "Line       : %u\n",
+-							 ctx.function,
+-							 ctx.file,
+-							 ctx.line);
+-
+-	if (ctx.expression)
+-		std::fprintf(stderr, "Expression : %s\n",
+-							 ctx.expression);
+-
+-	if (ctx.context)
+-		dump_context(ctx.context);
+-
+-	dump_backtrace(ctx.address);
+-
+-	std::fprintf(stderr,	 "===============================================================================\n"
+-							 "\n");
+-	std::fflush(stderr);
+-	std::abort();
++	std::fprintf(stderr, "Devia estar aqui um erro, não consegui compilar com o header exec.info por isso removi o código deste ficheiro. debug_linux.cpp");
+ }
+ 
+ ///////////////////////////////////////////////////////////////////////////////
