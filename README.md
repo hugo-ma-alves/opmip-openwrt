@@ -79,12 +79,12 @@ sure that you can login. Typically, this can be done as following:
     Login to the device using "telnet 192.168.1.1" 
 
 You should see an OpenWrt welcome message.
-Make sure that your pc have an ip in 192.168.1.x range 
-immediately after logon change the root password:
+Make sure that your pc have an ip in 192.168.1.x range. 
+Immediately after logon change the root password:
       
       passwd
 
-After this logout and connect through ssh
+After changing the password logout and connect through ssh
 
       ssh root@192.168.1.1
 
@@ -92,7 +92,7 @@ Check if there is everything ok and exit.
 
 ##### Add OPMIP extensions
 
-Configure the PATH to use the toolchain gcc instead off the host gcc:
+Configure the PATH to use the gcc from the toolchain instead off the host gcc:
 
       http://wiki.openwrt.org/doc/devel/crosscompile
       
@@ -100,7 +100,7 @@ Go to your working directory and download the ODTONE extension.
 
     cd ~/projects/
     git clone https://github.com/ATNoG/odtone-openwrt.git
-    (I cant compile this repositorie, instead i used this:https://github.com/hugo-ma-alves/odtone-openwrt.git
+    (I cant compile this repository, instead i used this:https://github.com/hugo-ma-alves/odtone-openwrt.git
 
 Add the ompip extensions to the `attitude_adjustment_12.09` directory.
 
