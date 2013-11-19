@@ -15,13 +15,14 @@ include $(INCLUDE_DIR)/package.mk
 define Package/opmip
   SECTION:=net
   CATEGORY:=Network
-  URL:=http://atnog.av.it.pt/odtone
+  URL:=http://helios.av.it.pt/projects/opmip
   DEPENDS:=+kmod-ipv6 +boost-thread +boost-system +boost-program_options +libnl
   TITLE:=OPMIP Package
 endef
 
 define Package/opmip/description
- This package contains the opmip implementation.
+ This package contains the opmip implementation from IT Aveiro.
+  http://helios.av.it.pt/projects/opmip
 endef
 
 define Package/Prepare
