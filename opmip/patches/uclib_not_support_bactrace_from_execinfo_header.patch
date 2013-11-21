@@ -1,30 +1,72 @@
 diff --git a/lib/opmip/debug_linux.cpp b/lib/opmip/debug_linux.cpp
-index 1c6b117..ba395ec 100644
+index 1c6b117..7c68ea0 100644
 --- a/lib/opmip/debug_linux.cpp
 +++ b/lib/opmip/debug_linux.cpp
-@@ -19,7 +19,6 @@
+@@ -19,7 +19,7 @@
  #include <cstdio>
  #include <cstring>
  
 -#include <execinfo.h>
++//#include <execinfo.h>
  #include <signal.h>
  
  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-@@ -84,7 +83,7 @@ static void dump_backtrace(void* address)
+@@ -37,7 +37,7 @@ static void signal_handler(int, siginfo_t* info, void* context)
+ #elif __amd64__
+ 	ctx.address = (void*) mctx->rip;
+ #else
+-#	error "Add support for this architecture"
++	std::fprintf(stderr, "\n== BACKTRACE NOT AVAIABLE, FIXME ==\n");
+ #endif
+ 	ctx.context = mctx;
+ 	crash(ctx);
+@@ -57,6 +57,7 @@ static void dump_context(void* context)
+ 							ctx->eax, ctx->edx, ctx->ecx, ctx->ebx,
+ 							ctx->edi, ctx->esi, ctx->ebp, ctx->esp,
+ 							ctx->eip, ctx->eflags
++				);
+ #elif __amd64__
+ 							"rax = %016lX  rdx = %016lX  rcx = %016lX\n"
+ 							"rbx = %016lX  rdi = %016lX  rsi = %016lX\n"
+@@ -71,10 +72,12 @@ static void dump_context(void* context)
+ 							ctx->r8 , ctx->r9 , ctx->r10, ctx->r11,
+ 							ctx->r12, ctx->r13, ctx->r14, ctx->r15,
+ 							ctx->rip, ctx->eflags
++				 );
+ #else
+-#	error "Add support for this architecture"
++	);
++	std::fprintf(stderr, "This metod is not supported in this Arch - no backtrace");
+ #endif
+-	                        );
++	                       
+ }
+ 
+ static void dump_backtrace(void* address)
+@@ -83,16 +86,18 @@ static void dump_backtrace(void* address)
+ 	int i = 0;
  	int n;
  
- 	std::memset(trace, 0, sizeof(trace));
+-	std::memset(trace, 0, sizeof(trace));
 -	n = ::backtrace(trace, OPMIP_COUNT_OF(trace));
-+
- 	if (address)
- 		for(; i < n; ++i)
- 			if (trace[i] == address)
-@@ -92,7 +91,7 @@ static void dump_backtrace(void* address)
+-	if (address)
+-		for(; i < n; ++i)
+-			if (trace[i] == address)
+-				break;
++	//std::memset(trace, 0, sizeof(trace));
++	//n = ::backtrace(trace, OPMIP_COUNT_OF(trace));
++	//if (address)
++	//	for(; i < n; ++i)
++	//		if (trace[i] == address)
++	//			break;
  
- 	std::fprintf(stderr, "\n== stack backtrace ==\n");
+-	std::fprintf(stderr, "\n== stack backtrace ==\n");
++	//std::fprintf(stderr, "\n== stack backtrace ==\n");
  	std::fflush(stderr);
 -	::backtrace_symbols_fd(trace + i, n - i, STDERR_FILENO);
-+
++	std::fprintf(stderr, "\n== BACKTRACE NOT AVAIABLE, FIXME ==\n");
++	std::fflush(stderr);
++	//::backtrace_symbols_fd(trace + i, n - i, STDERR_FILENO);
  }
  
  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
