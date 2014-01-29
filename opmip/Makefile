@@ -18,9 +18,9 @@ define Package/opmip
   SECTION:=net
   CATEGORY:=Network
   URL:=http://helios.av.it.pt/projects/opmip
-  DEPENDS:=+kmod-ipv6 +boost-thread +boost-system +boost-program_options +libnl +lstdc++ +libstdcpp
+  DEPENDS:=+kmod-ipv6 +boost-thread +boost-system +boost-program_options +libnl +lstdc++ +libstdcpp +odtone
   TITLE:=OPMIP Package
-  PKG_BUILD_DEPENDS:=lstdc++ libstdcpp
+  PKG_BUILD_DEPENDS:=lstdc++ libstdcpp +boost-system +boost-program_options +odtone
 endef
 
 define Package/opmip/description
@@ -51,7 +51,7 @@ define Build/Compile
 			$(filter -j%,$(PKG_JOBS)) \
 			toolset=gcc-$(ARCHITECTURE) --build-type=minimal --layout=system optimization=space \
 			--disable-long-double link=shared runtime-link=shared inlining=on debug-symbols=off \
-			$(CONFIGURE_ARGS)  linkflags="-lpthread -lgcc_eh -lboost_program_options -lboost_system -lboost_thread -lnl -lnl-genl -lnl-route" \
+			$(CONFIGURE_ARGS)  linkflags="-lpthread -lgcc_eh -lboost_program_options -lboost_system -lboost_thread -lodtone -lnl -lnl-genl -lnl-route" \
 			release \
 	)
 endef
@@ -73,4 +73,4 @@ define Package/opmip/install
 
 endef
 
-$(eval $(call BuildPackage,opmip))
+$(eval $(call BuildPackage,opmip,odtone))

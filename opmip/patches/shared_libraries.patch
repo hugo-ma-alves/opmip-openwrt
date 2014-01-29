@@ -1,47 +1,3 @@
-diff --git a/Jamroot b/Jamroot
-index 14a56c4..2af0884 100644
---- a/Jamroot
-+++ b/Jamroot
-@@ -22,7 +22,8 @@ import path ;
- project opmip
- 	: requirements
- 		<include>inc
--		<link>static
-+		<link>shared
-+		<runtime-link>shared
- 		<linkflags>-rdynamic
- 		<define>BOOST_ASIO_SEPARATE_COMPILATION
- 	: usage-requirements
-@@ -30,29 +31,6 @@ project opmip
- 	: build-dir bin.v2
- 	;
- 
--#
--# Import the boost project
--#
--path-constant TOP : . ;
--
--local boost-major = 1 ;
--local boost-minor = 49 ;
--local boost-patch = 0 ;
--local boost-root ;
--
--boost-root ?= [ option.get boost-root ] ;
--boost-root ?= [ os.environ BOOST_ROOT ] ;
--
--if ! $(boost-root) {
--	boost-root = [ path.join $(TOP) ../boost_$(boost-major)_$(boost-minor)_$(boost-patch) ] ;
--
--	local version = $(boost-major).$(boost-minor).$(boost-patch) ;
--
--	ECHO "Warning: Assuming that Boost $(version) root is located at $(boost-root)" ;
--	ECHO "Warning: You can set the location of the Boost $(version) libraries root in the command line"
--	     "(--boost-root=/path/to/boost) or in the environment variable BOOST_ROOT" ;
--}
--use-project boost : $(boost-root) ;
- 
- #
- # Import the ODTONE Project
 diff --git a/app/opmip-lma/Jamfile b/app/opmip-lma/Jamfile
 index 7a2cbd9..f49694f 100644
 --- a/app/opmip-lma/Jamfile
@@ -55,19 +11,19 @@ index 7a2cbd9..f49694f 100644
  	;
  
  install install
-diff --git a/app/opmip-mag/Jamfile b/app/opmip-mag/Jamfile
-index 51f82f4..88e0f84 100644
---- a/app/opmip-mag/Jamfile
-+++ b/app/opmip-mag/Jamfile
-@@ -38,8 +38,6 @@ exe opmip-mag
- 	  drivers/madwifi_driver_impl.cpp
- 	  drivers/dummy.cpp
- 	  ../../lib/opmip
--	  /boost//thread
--	  /boost//program_options
- 	  dl
- 	  ieee802_11
- 	;
+#diff --git a/app/opmip-mag/Jamfile b/app/opmip-mag/Jamfile
+#index 51f82f4..88e0f84 100644
+#--- a/app/opmip-mag/Jamfile
+#+++ b/app/opmip-mag/Jamfile
+#@@ -38,8 +38,6 @@ exe opmip-mag
+# 	  drivers/madwifi_driver_impl.cpp
+# 	  drivers/dummy.cpp
+# 	  ../../lib/opmip
+#-	  /boost//thread
+#-	  /boost//program_options
+# 	  dl
+# 	  ieee802_11
+# 	;
 diff --git a/lib/opmip/Jamfile b/lib/opmip/Jamfile
 index ec2d35c..56237af 100644
 --- a/lib/opmip/Jamfile
@@ -89,3 +45,4 @@ index ec2d35c..56237af 100644
  	  pthread
  	  librt
  	;
+

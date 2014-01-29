@@ -1,0 +1,41 @@
+diff --git a/app/opmip-mag/Jamfile b/app/opmip-mag/Jamfile
+index 51f82f4..0f01466 100644
+--- a/app/opmip-mag/Jamfile
++++ b/app/opmip-mag/Jamfile
+@@ -17,17 +17,15 @@
+ 
+ lib dl : : <name>dl <link>shared ;
+ 
+-if [ opmip.has-odtone ] {
+ 	opmip.explicit-alias ieee802_11
+ 		: drivers/ieee802_21_driver.cpp
+-		  /odtone//odtone
+ 		:
+ 		:
++		  #Use this line to compile correctly ieee802.21 driver
++		  #Ifdef num cpp
+ 		: <define>OPMIP_CFG_ODTONE
+ 		;
+-} else {
+-	opmip.explicit-alias ieee802_11 ;
+-}
++
+ 
+ exe opmip-mag
+ 	: main.cpp
+@@ -38,13 +36,12 @@ exe opmip-mag
+ 	  drivers/madwifi_driver_impl.cpp
+ 	  drivers/dummy.cpp
+ 	  ../../lib/opmip
+-	  /boost//thread
+-	  /boost//program_options
+ 	  dl
+-	  ieee802_11
++          ieee802_11
+ 	;
+ 
+ install install
+ 	: opmip-mag
+ 	: <location>../../dist
++
+ 	;
