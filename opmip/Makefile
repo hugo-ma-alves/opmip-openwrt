@@ -6,9 +6,9 @@ PKG_NAME_SHORT:=opmip
 PKG_NAME:=$(PKG_NAME_SHORT)
 PKG_VERSION:=1.0
 
-PKG_SOURCE:=master.zip
+PKG_SOURCE:=v0.3.zip
 PKG_SOURCE_URL:= https://github.com/ATNoG/opmip/archive/
-PKG_BUILD_DIR:=$(BUILD_DIR)/opmip-master
+PKG_BUILD_DIR:=$(BUILD_DIR)/opmip-0.3
 
 ARCHITECTURE:=$(ARCH)
 
