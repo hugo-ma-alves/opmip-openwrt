@@ -47,7 +47,7 @@ define Build/Compile
 		STRIP=$(GNU_TARGET_NAME)-strip \
 		OBJCOPY=$(GNU_TARGET_NAME)-objcopy \
 		OBJDUMP=$(GNU_TARGET_NAME)-objdump \
-		b2  app/opmip-lma app/opmip-mag  \
+		bjam  app/opmip-lma app/opmip-mag  \
 			$(filter -j%,$(PKG_JOBS)) \
 			toolset=gcc-$(ARCHITECTURE) --build-type=minimal --layout=system optimization=space \
 			--disable-long-double link=shared runtime-link=shared inlining=on debug-symbols=off \
