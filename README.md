@@ -6,7 +6,9 @@ OPMIP is an implementation of the PMIPv6 standard:
 * opmip-mag - implements the Mobile Access Gateway (MAG)
 * opmip-lma - implements the Local Mobility Anchor (LMA)
 
-It is recommended to install also the odtone-openwrt
+It's recommended to install also the odtone-openwrt package. This is a implementation of the 802.21.
+
+	http://atnog.github.io/opmip/
 
 Overview
 --------
@@ -17,60 +19,122 @@ router/Access Point.
 Supported Devices
 -----------------
 
-Not avaiable A yet
+Being tested on a TpLink wdr 4300
 
   
-Update your Device
+What you need
 ------------------
 
 To install opmip capabilities in your router you need to:
 
 * Get an appropriate image for it.
+* Compile the image with the opmip package
 * Load this image to your device.
 * Verify that everything works. 
 
-## Getting the image
+ Build the OpenWrt Image
+---------------
 
+#### Building a vanilla image
 
-#### Building from Sources
-
-If you prefer to build your own image rather than using one of those given,
-follow the instructions below. It is strongly recommended that you build
+It is strongly recommended that you build
 and load a vanilla OpenWrt tree before adding any ODTONE-related functionality.
 
 This release is based on the Attitude Adjustment OpenWrt release.
 
-##### Building OpenWrt
-
-Install packages required by the OpenWrt buildsystem
+Install packages required by the OpenWrt buildsystem. (Instructions for Debian)
 
     apt-get install build-essential binutils flex bison autoconf gettext texinfo sharutils \
-                subversion libncurses5-dev ncurses-term zlib1g-dev gawk
+                subversion libncurses5-dev ncurses-term zlib1g-dev gawk git-core libboost1.53-dev	
 
-Checkout and prepare Attitude Adjustment and the packages. For the rest of
+Checkout and prepare Attitude Adjustment. For the rest of
 this section we assume that `~/projects` is your working directory. 
 
     cd ~/projects
-    svn co svn://svn.openwrt.org/openwrt/tags/attitude_adjustment_12.09/
-    cd attitude_adjustment_12.09
-    ./scripts/feeds update -a
-    ./scripts/feeds install -a
-
+    git clone git://git.openwrt.org/12.09/openwrt.git
+    cd openwrt
+   
 Configure Attitude Adjustment (select target system) and the packages
 
     make menuconfig
 
-If you select extra packages you should check if you have all prerequisites
-installed. Check with:
+Compile a vanilla version of OpenWrt. The first compilation can take much time. The first compilation must download and configure the toolchain and the crosscompile environment.
 
-    make prereq
+	make
 
-Finally build Attitude Adjustment
+#### Change kernel settings
+Now we need to make some changes to the kernel configurations.
+	
+	make kernel_menuconfig
+
+And activate the following options:
+
+	General setup 
+		--> Prompt for development and/or incomplete code/drivers [CONFIG_EXPERIMENTAL]
+		--> System V IPC [CONFIG_SYSVIPC]
+
+		Networking support [CONFIG_NET]
+		--> Networking options
+		    --> Transformation user configuration interface [CONFIG_XFRM_USER]
+		    --> Transformation sub policy support [CONFIG_XFRM_SUB_POLICY]
+		    --> Transformation migrate database [CONFIG_XFRM_MIGRATE]
+		    --> PF_KEY sockets [CONFIG_NET_KEY]
+		    --> PF_KEY MIGRATE [CONFIG_NET_KEY_MIGRATE]
+		    --> TCP/IP networking [CONFIG_INET]
+		    --> The IPv6 protocol [CONFIG_IPV6]
+			--> IPv6: AH transformation [CONFIG_INET6_AH]
+			--> IPv6: ESP transformation [CONFIG_INET6_ESP]
+			--> IPv6: IPComp transformation [CONFIG_INET6_IPCOMP]
+			--> IPv6: Mobility [CONFIG_IPV6_MIP6]
+			--> IPv6: IPsec transport mode [CONFIG_INET6_XFRM_MODE_TRANSPORT]
+			--> IPv6: IPsec tunnel mode [CONFIG_INET6_XFRM_MODE_TUNNEL]
+			--> IPv6: MIPv6 route optimization mode [CONFIG_INET6_XFRM_MODE_ROUTEOPTIMIZATION]
+			--> IPv6: IP-in-IPv6 tunnel (RFC2473) [CONFIG_IPV6_TUNNEL]
+			--> IPv6: Multiple Routing Tables [CONFIG_IPV6_MULTIPLE_TABLES]
+			--> IPv6: source address based routing [CONFIG_IPV6_SUBTREES]
+
+		File systems
+		--> Pseudo filesystems
+		    --> /proc file system support [CONFIG_PROC_FS]
+
+Now compile the image with the changes:
+		make
+
+#### Add the boost dependency
+
+Now you have a vanilla openWrt image in the bin directory.
+The next step is to add the boost libraries with the feeds script.
+
+	./scripts/feeds update -a
+	./scripts/feeds install boost
+	make menuconfig
+	exit
+	make prereq
+
+
+#### Add the OPMIP and ODTONE packages to the image
+Add the ODTONE package to the list of avaialable packages:
+
+	cd ~/projects/openwrt/package/
+   	ln -s ~/projects/odtone-openwrt/odtone-0.6/
+
+Add the OPMIP extensions to the list of avaialable packages.
+
+    cd ~/projects/openwrt/package/
+    ln -s ~/projects/opmip-openwrt/opmip/
+
+
+Both packages are under the network section.
+
+#### Build the final image
+Finally build OpenWrt with OPMIP and ODTONE
 
     make V=s | tee make.log
 
+If the compilation was sucessfull you now have a image with all the software required to use OPMIP.
+
 Load the image to your device. All images can be found under
-`~/projects/attitude_adjustment_12.09/bin/` After the device has rebooted make
+`~/projects/openwrt/bin/` After the device has rebooted make
 sure that you can login. Typically, this can be done as following:
 
     Connect to one of the "LAN" ports, not the Internet port (if there is any).
@@ -90,50 +154,20 @@ After changing the password logout and connect through ssh
 
 Check if there is everything ok and exit.
 
-##### Add OPMIP extensions
+Now you can implement a PMIPV6 network following the author documentation:
+	http://atnog.github.io/opmip/documentation/index.html
+
+Help 
+-------------
 
 Configure the PATH to use the gcc from the toolchain instead off the host gcc:
 
       http://wiki.openwrt.org/doc/devel/crosscompile
       
-Go to your working directory and download the ODTONE extension.
-
-    cd ~/projects/
-    git clone https://github.com/ATNoG/odtone-openwrt.git
-    (I cant compile this repository, instead i used this:https://github.com/hugo-ma-alves/odtone-openwrt.git
-
-Add the ompip extensions to the `attitude_adjustment_12.09` directory.
-
-    cd ~/projects/attitude_adjustment_12.09/package/
-    ln -s ~/projects/opmip-openwrt/opmip/
-
-Add the related package to your configuration
-
-    cd ~/projects/attitude_adjustment_12.09
-    make menuconfig
-
-Choose the following:
-
-    Select your platform for Target System (Broadcom BRCM47xx/953XX,Atheros AR71xx, etc)
-    Select your platform at Target Profile (i.e. TP-Link-WR1043ND, Broadcom BRCM43xx Wifi, etc)
-    Select opmip package under network
-    Save and Exit 
-
-Build the package
+Build an individual package:
 
     make V=s package/opmip/compile
-
-If no errors are returned continue to the next step.
-
-Build the image
-
-    make V=s | tee build.log
-
-Load the new image to your device.
-
-
-## Change kernel settings to activate some extra modules
-      SOON
+    make V=s package/odtone-0.6/compile
 
 
 ## Loading the Image
@@ -141,31 +175,20 @@ Load the new image to your device.
 There are different ways of loading the binary image to your device.
 Please consult the related OpenWrt page and/or the OpenWrt info page
 for your specific device for appropriate instructions.
-
-#### Verifying update
-
-By default, pre-compiled images and images build from the source code
-will have the port labeled "internet" as management port (out-of-band),
-with the static IP 192.168.1.1. You should be able to login through
-that port as long as you configure your PC to the 192.168.1.0/24 subnet.
-After you have configured your PC, try to login:
-
-    telnet 192.168.1.1
-
-By that time, you should be connected to the OpenWrt box which runs
-opmip. Verify that the relevant processes are running:
-
-    ps aux | grep opmip-mihf
-    ps aux | grep opmip-mag
-
-
+For example the wiki for TpLink wdr4300
+	http://wiki.openwrt.org/toh/tp-link/tl-wdr4300
 
 Configuration
 -------------
 
-opmip configuration files are located at `/etc/opmip folder`. It
+OPMIP configuration files are located at `/etc/opmip folder`. It
 contains the node database configuration file (node.db)
 
+ODTONE configuration files are located at `/etc/odtone folder`. It
+contains a linkSap.conf and an odtone.conf
+
+You should follow the documentation at:
+	 http://atnog.github.io/opmip/documentation/index.html
 
 
 ### opmip-lma
@@ -174,7 +197,6 @@ Implements the Local Mobility Anchor (LMA)
 
 To get usage help, type at the command prompt: opmip-lma --help
 
-      TODO
 
 ### opmip-mag
 
@@ -182,5 +204,4 @@ Implements the Mobile Access Gateway (MAG)
 
 To get usage help, type at the command prompt: opmip-lma --help
 
-      TODO
 
