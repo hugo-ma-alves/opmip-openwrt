@@ -45,7 +45,7 @@ This release is based on the Attitude Adjustment OpenWrt release.
 Install packages required by the OpenWrt buildsystem. (Instructions for Debian)
 
     apt-get install build-essential binutils flex bison autoconf gettext texinfo sharutils \
-                subversion libncurses5-dev ncurses-term zlib1g-dev gawk git-core libboost1.53-dev	
+                subversion libncurses5-dev ncurses-term zlib1g-dev gawk git-core libboost-dev	
 
 Checkout and prepare Attitude Adjustment. For the rest of
 this section we assume that `~/projects` is your working directory. 
@@ -111,20 +111,33 @@ The next step is to add the boost libraries with the feeds script.
 	exit
 	make prereq
 
+Configure the Boost toolsets.
+	
+	echo "using gcc : mips : mips-openwrt-linux-g++;" > ~/user-config.jam
+
+Adapt the compiler to your router architecture. This example is for the TPLink wdr4300.
+The mips-openwrt-linux-g++ is a compiler from the openwrt toolchain. The toolchain tools will change accordingly to the target architecture.
+The toolschain it's located in the staging_dir.
 
 #### Add the OPMIP and ODTONE packages to the image
 Add the ODTONE package to the list of avaialable packages:
-
+	
+	cd ~/projects/
+	git clone https://github.com/hugo-ma-alves/odtone-openwrt.git
 	cd ~/projects/openwrt/package/
    	ln -s ~/projects/odtone-openwrt/odtone-0.6/
 
 Add the OPMIP extensions to the list of avaialable packages.
 
-    cd ~/projects/openwrt/package/
-    ln -s ~/projects/opmip-openwrt/opmip/
+	cd ~/projects/
+	git clone https://github.com/hugo-ma-alves/opmip-openwrt.git
+    	cd ~/projects/openwrt/package/
+	ln -s ~/projects/opmip-openwrt/opmip/
 
 
-Both packages are under the network section.
+Both packages are under the network section. Go there and select OPMIP, the ODTONE is automaticly selected.
+
+	make menuconfig
 
 #### Build the final image
 Finally build OpenWrt with OPMIP and ODTONE
